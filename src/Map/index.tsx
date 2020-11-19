@@ -7,7 +7,7 @@ import "./style.css";
 
 const CONTEXT = "webgl";
 
-const DOTGIS_USER = "dotgis";
+const USER = "aperez";
 const CARTO_USER = "cartovl";
 
 const POLAR_PROJECTION = "ST_Transform(the_geom_webmercator, 3575)";
@@ -24,11 +24,11 @@ function Map(): JSX.Element {
   const [gl, setGl] = useState<WebGLRenderingContext | null>(null);
   const [screenWidth, screenHeight] = useWindowSize();
 
-  const meteorites = useDecode({ sql: QUERIES.METEO, user: DOTGIS_USER, dataField: "mass", type: "point" });
+  const meteorites = useDecode({ sql: QUERIES.METEO, user: USER, dataField: "mass", type: "point" });
 
   const meteoritesPolar = useDecode({
     sql: QUERIES.POLAR_METEO,
-    user: DOTGIS_USER,
+    user: USER,
     dataField: "mass",
     type: "point",
     pullToRight: true,
