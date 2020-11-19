@@ -1,4 +1,5 @@
-import React, { useRef, useState, useEffect, useCallback, useMemo } from "react";
+import React, { useRef, useState, useEffect, useCallback } from "react";
+import { polyfillContext } from "@luma.gl/gltools";
 import { useDecode, useWindowSize } from "../hooks";
 import { meteoritesFs, worldFs } from "../glsl/fragments";
 import { meteoritesVs, worldVs } from "../glsl/vertices";
@@ -46,7 +47,13 @@ function Map(): JSX.Element {
 
   useEffect((): void => {
     if (canvasRef.current) {
-      setGl(canvasRef.current.getContext(CONTEXT));
+      const context = canvasRef.current.getContext(CONTEXT);
+
+      if (!context) {
+        return;
+      }
+
+      setGl(polyfillContext(context));
     }
   }, [canvasRef]);
 
@@ -87,7 +94,7 @@ function Map(): JSX.Element {
     [gl],
   );
 
-  const render = useCallback(
+  const draw = useCallback(
     (geometry, data, vs, fs, type): void => {
       if (gl) {
         const program = createProgram(vs, fs) as WebGLProgram;
@@ -153,10 +160,10 @@ function Map(): JSX.Element {
       gl.enable(gl.BLEND);
       gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
-      render(g2, d2, worldVs, worldFs, "line");
-      render(g1, d1, meteoritesVs, meteoritesFs, "point");
-      render(g22, d22, worldVs, worldFs, "line");
-      render(g12, d12, meteoritesVs, meteoritesFs, "point");
+      draw(g2, d2, worldVs, worldFs, "line");
+      draw(g1, d1, meteoritesVs, meteoritesFs, "point");
+      draw(g22, d22, worldVs, worldFs, "line");
+      draw(g12, d12, meteoritesVs, meteoritesFs, "point");
     }
   }, [meteorites, meteoritesPolar, countries, countriesPolar, gl, screenWidth, screenHeight]);
 
